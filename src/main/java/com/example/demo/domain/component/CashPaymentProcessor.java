@@ -1,6 +1,6 @@
 package com.example.demo.domain.component;
 
-import static com.example.demo.domain.model.PaymentStatus.COMPLETED;
+import static com.example.demo.domain.model.PaymentStatus.REJECTED;
 
 import com.example.demo.domain.annotation.PaymentType;
 import com.example.demo.domain.model.Payment;
@@ -9,13 +9,13 @@ import com.example.demo.domain.service.PaymentProcessor;
 import org.springframework.stereotype.Component;
 
 @Component
-@PaymentType(PaymentMethod.CARD)
-public class CardPaymentProcessor implements PaymentProcessor {
+@PaymentType(PaymentMethod.CASH)
+public class CashPaymentProcessor implements PaymentProcessor {
 
 
   @Override
   public void processPayment(Payment payment) {
-    System.out.println("Processing Card Payment: " + payment.getAmount());
-    payment.setStatus(COMPLETED.name());
+    System.out.println("Processing Cash Payment: " + payment.getAmount());
+    payment.setStatus(REJECTED.name());
   }
 }

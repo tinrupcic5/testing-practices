@@ -1,5 +1,8 @@
 package com.example.demo.domain.model;
 
+import static com.example.demo.domain.model.PaymentStatus.COMPLETED;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +15,7 @@ import java.util.Date;
 @Entity
 @Table(name = "payments")
 public class Payment {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -30,6 +34,10 @@ public class Payment {
 
   @Column(nullable = false)
   private String paymentMethod;
+
+  @Column
+  @JsonIgnore
+  private boolean isPayed = false;
 
   public Long getId() {
     return id;
@@ -69,6 +77,9 @@ public class Payment {
 
   public void setStatus(String status) {
     this.status = status;
+    if (COMPLETED.name().equals(status)) {
+      this.isPayed = true;
+    }
   }
 
   public String getPaymentMethod() {
@@ -77,5 +88,13 @@ public class Payment {
 
   public void setPaymentMethod(String paymentMethod) {
     this.paymentMethod = paymentMethod;
+  }
+
+  public boolean isPayed() {
+    return isPayed;
+  }
+
+  public void setPayed(boolean payed) {
+    isPayed = payed;
   }
 }

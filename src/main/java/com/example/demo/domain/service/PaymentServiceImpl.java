@@ -1,5 +1,7 @@
 package com.example.demo.domain.service;
 
+import static com.example.demo.domain.model.PaymentStatus.PENDING;
+
 import com.example.demo.domain.annotation.PaymentType;
 import com.example.demo.domain.model.Payment;
 import com.example.demo.domain.model.PaymentMethod;
@@ -22,19 +24,23 @@ public class PaymentServiceImpl implements IPaymentService {
   @PaymentType(PaymentMethod.PAYPAL)
   private PaymentProcessor payPalPaymentProcessor;
 
+  @PaymentType(PaymentMethod.CASH)
+  private PaymentProcessor cashPaymentProcessor;
+
 
   @Autowired
   public PaymentServiceImpl(IPaymentRepository paymentRepository, PaymentProcessor cardPaymentProcessor,
-      PaymentProcessor payPalPaymentProcessor) {
+      PaymentProcessor payPalPaymentProcessor, PaymentProcessor cashPaymentProcessor) {
     this.paymentRepository = paymentRepository;
     this.cardPaymentProcessor = cardPaymentProcessor;
     this.payPalPaymentProcessor = payPalPaymentProcessor;
+    this.cashPaymentProcessor = cashPaymentProcessor;
   }
 
   @Override
   public Payment createPayment(Payment payment) {
     payment.setPaymentDate(new Date());
-    payment.setStatus("PENDING");
+    payment.setStatus(PENDING.name());
 
     PaymentProcessor processor = getProcessor(payment.getPaymentMethod());
     processor.processPayment(payment);
@@ -62,6 +68,7 @@ public class PaymentServiceImpl implements IPaymentService {
     return switch (paymentMethod) {
       case CARD -> cardPaymentProcessor;
       case PAYPAL -> payPalPaymentProcessor;
+      case CASH -> cashPaymentProcessor;
       default -> throw new IllegalArgumentException("Invalid payment method: " + method);
     };
   }
