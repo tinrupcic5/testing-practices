@@ -30,7 +30,7 @@ public class Payment {
   private Date paymentDate;
 
   @Column(nullable = false)
-  private String status; //  "PENDING", "COMPLETED", "FAILED"
+  private String status; //  "PENDING", "COMPLETED", "REJECTED"
 
   @Column(nullable = false)
   private String paymentMethod;
@@ -38,6 +38,13 @@ public class Payment {
   @Column
   @JsonIgnore
   private boolean isPayed = false;
+
+  public Payment(BigDecimal amount) {
+    this.amount = amount;
+  }
+
+  public Payment() {
+  }
 
   public Long getId() {
     return id;
