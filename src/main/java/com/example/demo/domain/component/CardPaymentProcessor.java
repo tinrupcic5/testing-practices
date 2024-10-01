@@ -16,6 +16,7 @@ public class CardPaymentProcessor implements PaymentProcessor {
   @Override
   public void processPayment(Payment payment) {
     System.out.println("Processing Card Payment: " + payment.getAmount());
+
     payment.setStatus(COMPLETED.name());
   }
 }

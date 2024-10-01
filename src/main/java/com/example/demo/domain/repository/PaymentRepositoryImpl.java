@@ -34,6 +34,6 @@ public class PaymentRepositoryImpl implements IPaymentRepository {
 
   @Override
   public void deleteById(Long id) {
-
+    paymentRepository.deleteById(id);
   }
 }

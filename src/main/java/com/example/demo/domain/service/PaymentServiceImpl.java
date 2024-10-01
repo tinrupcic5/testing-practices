@@ -6,14 +6,14 @@ import com.example.demo.domain.annotation.PaymentType;
 import com.example.demo.domain.model.Payment;
 import com.example.demo.domain.model.PaymentMethod;
 import com.example.demo.domain.repository.IPaymentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class PaymentServiceImpl implements IPaymentService {
 
   private IPaymentRepository paymentRepository;
@@ -28,7 +28,6 @@ public class PaymentServiceImpl implements IPaymentService {
   private PaymentProcessor cashPaymentProcessor;
 
 
-  @Autowired
   public PaymentServiceImpl(IPaymentRepository paymentRepository, PaymentProcessor cardPaymentProcessor,
       PaymentProcessor payPalPaymentProcessor, PaymentProcessor cashPaymentProcessor) {
     this.paymentRepository = paymentRepository;
@@ -62,14 +61,17 @@ public class PaymentServiceImpl implements IPaymentService {
   public void deletePayment(Long id) {
     paymentRepository.deleteById(id);
   }
-
   private PaymentProcessor getProcessor(String method) {
-    PaymentMethod paymentMethod = PaymentMethod.valueOf(method.toUpperCase());
-    return switch (paymentMethod) {
-      case CARD -> cardPaymentProcessor;
-      case PAYPAL -> payPalPaymentProcessor;
-      case CASH -> cashPaymentProcessor;
-      default -> throw new IllegalArgumentException("Invalid payment method: " + method);
-    };
+    try {
+      PaymentMethod paymentMethod = PaymentMethod.valueOf(method.toUpperCase());
+      return switch (paymentMethod) {
+        case PAYPAL -> payPalPaymentProcessor;
+        case CARD -> cardPaymentProcessor;
+        case CASH -> cashPaymentProcessor;
+      };
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("Invalid payment method: " + method);
+    }
   }
+
 }
