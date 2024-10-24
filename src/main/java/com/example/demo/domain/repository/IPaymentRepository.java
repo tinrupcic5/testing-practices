@@ -12,5 +12,5 @@ public interface IPaymentRepository {
 
    Optional<Payment> findById(Long id);
 
-   void deleteById(Long id);
+   boolean deleteById(Long id);
 }

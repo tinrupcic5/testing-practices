@@ -12,5 +12,5 @@ public interface IPaymentService {
 
   Optional<Payment> getPaymentById(Long id);
 
-  void deletePayment(Long id);
+  boolean deletePayment(Long id);
 }

@@ -58,8 +58,8 @@ public class PaymentServiceImpl implements IPaymentService {
   }
 
   @Override
-  public void deletePayment(Long id) {
-    paymentRepository.deleteById(id);
+  public boolean deletePayment(Long id) {
+   return paymentRepository.deleteById(id);
   }
   private PaymentProcessor getProcessor(String method) {
     try {

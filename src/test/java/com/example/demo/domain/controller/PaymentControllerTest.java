@@ -1,129 +1,142 @@
 package com.example.demo.domain.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.example.demo.domain.model.Payment;
 import com.example.demo.domain.service.IPaymentService;
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class PaymentControllerTest {
 
-  private MockMvc mockMvc;
 
-  @Mock
-  private IPaymentService paymentService;
+    @Mock
+    private IPaymentService paymentService;
 
-  @InjectMocks
-  private PaymentController paymentController;
+    private PaymentController paymentController;
 
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-    mockMvc = MockMvcBuilders.standaloneSetup(paymentController).build();
-  }
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        paymentController = new PaymentController(paymentService);
+    }
 
-  @Test
-  void createPayment_ShouldReturnCreatedPayment() throws Exception {
-    // given
-    Payment payment = new Payment();
-    payment.setId(1L);
-    payment.setAmount(BigDecimal.valueOf(100));
-    payment.setStatus("COMPLETED");
+    @Test
+    public void shouldReturnAllPayments() {
+        // Given
+        Payment payment = new Payment();
+        payment.setId(1L);
+        payment.setAmount(BigDecimal.valueOf(100));
+        payment.setStatus("COMPLETED");
 
-    // when
-    when(paymentService.createPayment(any(Payment.class))).thenReturn(payment);
+        // When
+        List<Payment> expectedPayments = Collections.singletonList(payment);
+        given(paymentService.getAllPayments()).willReturn(expectedPayments);
+        ResponseEntity<List<Payment>> responseEntity = paymentController.getAllPayments();
+        List<Payment> actualPayments = responseEntity.getBody();
 
-    // then
-    mockMvc.perform(post("/api/payments")
-            .contentType("application/json")
-            .content(""
-                + "{\"amount\": 100.0,"
-                + " \"status\": \"COMPLETED\"}"
-                + ""))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(1))
-        .andExpect(jsonPath("$.amount").value(100.0))
-        .andExpect(jsonPath("$.status").value("COMPLETED"));
-  }
+        // Then
+        assertThat(actualPayments, is(expectedPayments));
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    }
 
-  @Test
-  void getAllPayments_ShouldReturnListOfPayments() throws Exception {
-    // given
-    Payment payment = new Payment();
-    payment.setId(1L);
-    payment.setAmount(BigDecimal.valueOf(100));
-    payment.setStatus("COMPLETED");
+    @Test
+    public void shouldCreatePayment() {
+        // Given
+        Payment payment = new Payment();
+        payment.setId(1L);
+        payment.setAmount(BigDecimal.valueOf(100));
+        payment.setStatus("PENDING");
 
-    // when
-    when(paymentService.getAllPayments()).thenReturn(Collections.singletonList(payment));
+        Payment createdPayment = new Payment();
+        createdPayment.setId(1L);
+        createdPayment.setAmount(BigDecimal.valueOf(100));
+        createdPayment.setStatus("COMPLETED");
 
-    // then
-    mockMvc.perform(get("/api/payments"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].id").value(1))
-        .andExpect(jsonPath("$[0].amount").value(100.0))
-        .andExpect(jsonPath("$[0].status").value("COMPLETED"));
-  }
+        // When
+        given(paymentService.createPayment(any(Payment.class))).willReturn(createdPayment);
 
-  @Test
-  void getPaymentById_ShouldReturnPayment_WhenExists() throws Exception {
-    // given
-    Payment payment = new Payment();
-    payment.setId(1L);
-    payment.setAmount(BigDecimal.valueOf(100));
-    payment.setStatus("COMPLETED");
+        ResponseEntity<Payment> responseEntity = paymentController.createPayment(payment);
+        Payment actualPayment = responseEntity.getBody();
 
-    // when
-    when(paymentService.getPaymentById(anyLong())).thenReturn(Optional.of(payment));
+        // Then
+        assertThat(actualPayment, is(createdPayment));
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+        assertThat(actualPayment != null, is(true));
+        assertThat(actualPayment.getId(), is(createdPayment.getId()));
+        assertThat(actualPayment.getAmount(), is(createdPayment.getAmount()));
+        assertThat(actualPayment.getStatus(), is(createdPayment.getStatus()));
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    }
 
-    // then
-    mockMvc.perform(get("/api/payments/1"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(1))
-        .andExpect(jsonPath("$.amount").value(100.0))
-        .andExpect(jsonPath("$.status").value("COMPLETED"));
-  }
+    @Test
+    public void shouldGetPaymentById() {
+        // Given
+        Payment payment = new Payment();
+        payment.setId(1L);
+        payment.setAmount(BigDecimal.valueOf(100));
+        payment.setStatus("COMPLETED");
 
-  @Test
-  void getPaymentById_ShouldReturnNotFound_WhenDoesNotExist() throws Exception {
-    // when
-    when(paymentService.getPaymentById(anyLong())).thenReturn(Optional.empty());
+        // When
+        given(paymentService.getPaymentById(anyLong())).willReturn(Optional.of(payment));
 
-    // then
-    mockMvc.perform(get("/api/payments/1"))
-        .andExpect(status().isNotFound());
-  }
+        ResponseEntity<Payment> responseEntity = paymentController.getPaymentById(1L);
+        Payment actualPayment = responseEntity.getBody();
 
-  @Test
-  void deletePayment_ShouldReturnNoContent() throws Exception {
-    // when
-    doNothing().when(paymentService).deletePayment(anyLong());
+        // Then
+        assertThat(actualPayment, is(payment));
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+        assertThat(actualPayment.getId(), is(payment.getId()));
+        assertThat(actualPayment.getAmount(), is(payment.getAmount()));
+        assertThat(actualPayment.getStatus(), is(payment.getStatus()));
+    }
 
-    // then
-    mockMvc.perform(delete("/api/payments/1"))
-        .andExpect(status().isNoContent());
+    @Test
+    public void shouldReturnNotFoundWhenGetPaymentById() {
+        // Given
+        given(paymentService.getPaymentById(anyLong())).willReturn(Optional.empty());
 
-    verify(paymentService, times(1)).deletePayment(1L);
-  }
+        // When
+        ResponseEntity<Payment> responseEntity = paymentController.getPaymentById(1L);
+
+        // Then
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+        assertThat(responseEntity.getBody() == null, is(true));
+    }
+
+
+    @Test
+    void ShouldReturnOkIfDeleted() {
+        // Given
+        given(paymentService.deletePayment(anyLong())).willReturn(true);
+
+        ResponseEntity<Boolean> responseEntity = paymentController.deletePayment(anyLong());
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    }
+
+    @Test
+    void ShouldReturnNotFoundOnDelete() {
+        // Given
+        given(paymentService.deletePayment(anyLong())).willReturn(false);
+
+        // Then
+        ResponseEntity<Boolean> responseEntity = paymentController.deletePayment(anyLong());
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+    }
+
+
 }

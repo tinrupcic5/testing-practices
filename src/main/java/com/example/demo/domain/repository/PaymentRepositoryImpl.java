@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PaymentRepositoryImpl implements IPaymentRepository {
 
-  private JpaPaymentRepository paymentRepository;
+  private final JpaPaymentRepository paymentRepository;
 
   @Autowired
   public PaymentRepositoryImpl(JpaPaymentRepository paymentRepository) {
@@ -24,16 +24,17 @@ public class PaymentRepositoryImpl implements IPaymentRepository {
 
   @Override
   public List<Payment> findAll() {
-    return List.of();
+    return paymentRepository.findAll();
   }
 
   @Override
   public Optional<Payment> findById(Long id) {
-    return Optional.empty();
+    return paymentRepository.findById(id);
   }
 
   @Override
-  public void deleteById(Long id) {
-    paymentRepository.deleteById(id);
+  public boolean deleteById(Long id) {
+   paymentRepository.deleteById(id);
+   return paymentRepository.existsById(id);
   }
 }

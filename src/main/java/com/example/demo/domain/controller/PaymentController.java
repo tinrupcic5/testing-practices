@@ -39,8 +39,13 @@ public class PaymentController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
-    paymentService.deletePayment(id);
-    return ResponseEntity.noContent().build();
+  public ResponseEntity<Boolean> deletePayment(@PathVariable Long id) {
+    if (paymentService.deletePayment(id)) {
+      return ResponseEntity.ok().build();
+    } else {
+      return ResponseEntity.notFound().build();
+    }
   }
+
+
 }
