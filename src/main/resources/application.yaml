@@ -17,17 +17,7 @@ spring:
     locations: classpath:db/migration
     validateOnMigrate: false
 
-
 logging:
   level:
     org.flywaydb: INFO
     root: info
-
-
-server:
-  port: 8888
-  error.whitelabel.enabled: false
-  tomcat:
-    mbeanregistry:
-      enabled: true
-  forward-headers-strategy: native

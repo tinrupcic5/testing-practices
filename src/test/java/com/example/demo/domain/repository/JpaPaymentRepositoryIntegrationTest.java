@@ -4,8 +4,10 @@ import com.example.demo.domain.model.Payment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -16,12 +18,14 @@ import static com.example.demo.domain.model.PaymentMethod.PAYPAL;
 import static com.example.demo.domain.model.PaymentStatus.COMPLETED;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@SpringBootTest
+@Transactional
+@ActiveProfiles("test")
+@Rollback
 public class JpaPaymentRepositoryIntegrationTest {
 
     @Autowired
-    private JpaPaymentRepository paymentRepository;
+    private IPaymentRepository paymentRepository;
 
     private Payment payment;
 
@@ -35,10 +39,6 @@ public class JpaPaymentRepositoryIntegrationTest {
         payment.setStatus(COMPLETED.name());
     }
 
-    @BeforeEach
-    public void beforeAll() {
-        paymentRepository.deleteAll();
-    }
 
     @Test
     public void shouldSavePayment() {
