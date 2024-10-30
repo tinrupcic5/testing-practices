@@ -1,4 +1,4 @@
-# Testing Practices
+# Testing Practices :coffee:
 
 ## Overview
 This project is dedicated to practicing and mastering testing techniques in the Spring Framework.
