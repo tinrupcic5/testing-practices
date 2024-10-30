@@ -13,7 +13,7 @@ The project is organized as follows:
 - `src/main/java`: Contains the main application code.
 - `src/test/java`: Contains test classes for unit and integration tests.
 
-## Testing Focus Areas
+## Testing Focus Areas :test_tube:
 
 ### Unit Testing
 - **Purpose**: Test individual methods and components in isolation.
