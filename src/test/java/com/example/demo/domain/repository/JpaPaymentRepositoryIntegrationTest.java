@@ -24,10 +24,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Rollback
 public class JpaPaymentRepositoryIntegrationTest {
 
-    @Autowired
-    private IPaymentRepository paymentRepository;
+    private final IPaymentRepository paymentRepository;
 
     private Payment payment;
+
+    public JpaPaymentRepositoryIntegrationTest(IPaymentRepository paymentRepository) {
+        this.paymentRepository = paymentRepository;
+    }
 
     @BeforeEach
     public void setUp() {

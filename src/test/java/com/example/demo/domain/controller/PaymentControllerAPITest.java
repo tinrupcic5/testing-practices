@@ -23,11 +23,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = PaymentController.class)
 class PaymentControllerAPITest {
 
-  @Autowired
-  private MockMvc mockMvc;
+  private final MockMvc mockMvc;
 
   @MockBean
   private IPaymentService paymentService;
+
+  public PaymentControllerAPITest(MockMvc mockMvc) {
+    this.mockMvc = mockMvc;
+  }
 
   @Test
   public void shouldReturnAllPayments() throws Exception {

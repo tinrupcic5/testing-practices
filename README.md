@@ -15,6 +15,10 @@ The project is organized as follows:
 
 ## Testing Focus Areas :test_tube:
 
+### ArchUnit tests
+
+- Arch Unit Intro ([Bealdung](https://www.baeldung.com/java-archunit-intro))
+
 ### Unit Testing
 - **Purpose**: Test individual methods and components in isolation.
 - **Tools**: Utilizing JUnit and Mockito to mock dependencies and assert expected behaviors.
