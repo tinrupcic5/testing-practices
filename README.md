@@ -17,8 +17,8 @@ The project is organized as follows:
 
 ### ArchUnit tests
 
-- Arch Unit Intro ([Bealdung](https://www.baeldung.com/java-archunit-intro)
-- Arch Unit Examples ([github](https://github.com/TNG/ArchUnit-Examples/tree/main/example-junit5/src/test/java/com/tngtech/archunit/exampletest/junit5)
+- Arch Unit Intro ([Bealdung](https://www.baeldung.com/java-archunit-intro))
+- Arch Unit Examples ([github](https://github.com/TNG/ArchUnit-Examples/tree/main/example-junit5/src/test/java/com/tngtech/archunit/exampletest/junit5))
 
 ### Unit Testing
 - **Purpose**: Test individual methods and components in isolation.
